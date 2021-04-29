@@ -1,0 +1,16 @@
+{
+  "name": "jsdoc-plugin-typescript",
+  "version": "0.0.1",
+  "description": "typescript support for jsdoc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jsdoc",
+    "plugin",
+    "typescript"
+  ],
+  "author": "hybtalented@163.com",
+  "license": "ISC"
+}
