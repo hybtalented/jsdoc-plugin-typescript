@@ -12,5 +12,17 @@
     "typescript"
   ],
   "author": "hybtalented@163.com",
-  "license": "ISC"
+  "license": "ISC",
+  "peerDependencies": {
+    "catharsis": "^0.8.0",
+    "jsdoc": "^3.6.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "catharsis": "^0.9.0",
+    "eslint": "^6.0.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "prettier": "^1.19.1"
+  }
 }

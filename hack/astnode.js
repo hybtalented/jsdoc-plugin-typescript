@@ -1,11 +1,9 @@
-const astnode = require('jsdoc/lib/jsdoc/src/astnode');
+const astnode = require('jsdoc/src/astnode');
 const Syntax = require('./syntax').Syntax;
 const catharsis = require('catharsis');
 
-const { jsdocRequire } = require('./util');
-
-const name = jsdocRequire('jsdoc/name');
-const logger = jsdocRequire('jsdoc/util/logger');
+const name = require('jsdoc/name');
+const logger = require('jsdoc/util/logger');
 const origin_astnode = {
   isScope: astnode.isScope,
   isFunction: astnode.isFunction,

@@ -1,23 +1,16 @@
 /* eslint-disable no-multi-assign */
-/* eslint-disable import/no-dynamic-require */
 /* eslint-disable global-require */
 const Syntax = require('./syntax').Syntax;
 
-function requireJsdoc(module_name) {
-  return require(`jsdoc/lib/${module_name}`);
-}
-
-exports.jsdocRequire = requireJsdoc;
-
 const jsdoc = {
-  doclet: requireJsdoc('jsdoc/doclet'),
-  name: requireJsdoc('jsdoc/name'),
+  doclet: require('jsdoc/doclet'),
+  name: require('jsdoc/name'),
   src: {
-    astnode: requireJsdoc('jsdoc/src/astnode'),
-    syntax: requireJsdoc('jsdoc/src/syntax')
+    astnode: require('jsdoc/src/astnode'),
+    syntax: require('jsdoc/src/syntax')
   },
   util: {
-    logger: requireJsdoc('jsdoc/util/logger')
+    logger: require('jsdoc/util/logger')
   }
 };
 function noop() {}
@@ -277,7 +270,10 @@ exports.makeInlineParamsFinisher = function makeInlineParamsFinisher(parser) {
           has_param = true;
         }
         if (type) {
-          param.type = { names: jsdoc.src.astnode.getTypeStrings(type, true), parsedType: type };
+          param.type = {
+            names: jsdoc.src.astnode.getTypeStrings(type, true),
+            parsedType: type
+          };
         }
       }
     });
@@ -459,5 +455,15 @@ exports.makeTempateFinisher = function makeTempateFinisher(templateParams) {
         }
       });
     }
+  };
+};
+
+exports.makeSuperClassFinisher = function makeSuperClassFinisher(className) {
+  return e => {
+    const { doclet } = e;
+    if (!doclet) {
+      return;
+    }
+    doclet.addTag('extends', className);
   };
 };

@@ -1,6 +1,6 @@
 /* eslint-disable no-proto */
 const Syntax = require('./syntax').Syntax;
-const { getInfo, nodeToType, isFunction } = require('./astnode');
+const { getInfo, nodeToType, nodeToValue, isFunction } = require('./astnode');
 const {
   trackVars,
   jsdoc,
@@ -12,7 +12,8 @@ const {
   makeInlineParamsFinisher,
   makeReturnTypeFinisher,
   makeConstructorFinisher,
-  makeTempateFinisher
+  makeTempateFinisher,
+  makeSuperClassFinisher
 } = require('./util');
 
 /**
@@ -119,6 +120,9 @@ function nodeToTempalteType(node) {
     return nodetype;
   }
 }
+/**
+ * @param {import('@babel/types').Node} node babel node
+ */
 module.exports = function onTypeScriptVisitNode(node, e, parser, currentSourceName) {
   const extras = {
     code: getInfo(node)
@@ -212,6 +216,11 @@ module.exports = function onTypeScriptVisitNode(node, e, parser, currentSourceNa
       nodetype = nodeToType(node);
       e.__proto__ = new TypeScriptSymbolFound(node, currentSourceName, extras);
       e.finishers.unshift(makeNodeTypeFinisher(nodetype));
+      break;
+    case Syntax.ClassDeclaration:
+      if (node.superClass) {
+        e.finishers.unshift(makeSuperClassFinisher(nodeToValue(node.superClass)));
+      }
       break;
     default:
       break;

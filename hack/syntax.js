@@ -1,4 +1,4 @@
-const Syntax = require('jsdoc/lib/jsdoc/src/syntax').Syntax;
+const Syntax = require('jsdoc/src/syntax').Syntax;
 // 添加对 TypeScipt interface 的支持
 Syntax.TSInterfaceDeclaration = 'TSInterfaceDeclaration';
 Syntax.TSInterfaceBody = 'TSInterfaceBody';

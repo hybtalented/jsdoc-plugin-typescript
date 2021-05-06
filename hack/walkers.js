@@ -1,6 +1,6 @@
 const util = require('./util');
 const { Syntax } = require('./syntax');
-const walkers = require('jsdoc/lib/jsdoc/src/walker').walkers;
+const walkers = require('jsdoc/src/walker').walkers;
 
 // typescript 允许函数体未定义
 walkers[Syntax.ArrowFunctionExpression] = (node, parent, state, cb) => {
