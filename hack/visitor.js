@@ -1,6 +1,6 @@
 /* eslint-disable no-proto */
 const Syntax = require('./syntax').Syntax;
-const { getInfo, nodeToType, nodeToValue, isFunction } = require('./astnode');
+const { getInfo, nodeToType, isFunction } = require('./astnode');
 const {
   trackVars,
   jsdoc,
@@ -12,8 +12,9 @@ const {
   makeInlineParamsFinisher,
   makeReturnTypeFinisher,
   makeConstructorFinisher,
+  makeRedirectDocletFinisher,
   makeTempateFinisher,
-  makeSuperClassFinisher
+  makeClassFinisher
 } = require('./util');
 
 /**
@@ -152,7 +153,7 @@ module.exports = function onTypeScriptVisitNode(node, e, parser, currentSourceNa
 
       e.__proto__ = new TypeScriptSymbolFound(node, currentSourceName, extras);
       if (node.kind === 'constructor' || node.type === Syntax.TSCallSignatureDeclaration) {
-        e.finishers.push(makeConstructorFinisher(parser));
+        e.finishers.push(makeRedirectDocletFinisher(parser, parent.parent), makeConstructorFinisher(parser));
       }
       trackVars(parser, node, e);
 
@@ -218,14 +219,16 @@ module.exports = function onTypeScriptVisitNode(node, e, parser, currentSourceNa
       e.finishers.unshift(makeNodeTypeFinisher(nodetype));
       break;
     case Syntax.ClassDeclaration:
-      if (node.superClass) {
-        e.finishers.unshift(makeSuperClassFinisher(nodeToValue(node.superClass)));
+      e.finishers = [makeClassFinisher(node)];
+
+      if (node.parent && node.parent.type === Syntax.ExportNamedDeclaration) {
+        e.finishers.unshift(makeRedirectDocletFinisher(parser, node.parent));
       }
-      break;
+
     default:
       break;
   }
   if (node.typeParameters) {
-    e.finishers.unshift(makeTempateFinisher(nodeToTempalteType(node.typeParameters)));
+    e.finishers.push(makeTempateFinisher(nodeToTempalteType(node.typeParameters)));
   }
 };

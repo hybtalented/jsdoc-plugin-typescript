@@ -19,10 +19,17 @@ function debug(...args) {
   jsdoc.util.logger.debug(args);
   debugger;
 }
+function getRedirectDoclet(doclet) {
+  let redirectDoclet = doclet;
+  while (redirectDoclet && redirectDoclet.redirectDoclet) {
+    redirectDoclet = redirectDoclet.redirectDoclet;
+  }
+  return redirectDoclet;
+}
 exports.noop = noop;
 exports.debug = debug;
 exports.jsdoc = jsdoc;
-
+exports.getRedirectDoclet = getRedirectDoclet;
 // TODO: docs
 function makeVarsFinisher(scopeDoclet) {
   return ({ doclet, code }) => {
@@ -219,13 +226,7 @@ function getParamType(param_name, parsed_type) {
     return parsed_type;
   }
 }
-function getRedirectDoclet(doclet) {
-  let ret = doclet;
-  while (ret && ret.redirectDoclet) {
-    ret = ret.redirectDoclet;
-  }
-  return ret;
-}
+
 /**
  * For function parameters that have inline documentation, create a function that will merge the
  * inline documentation into the function's doclet. If the parameter is already documented in the
@@ -306,29 +307,18 @@ exports.makeInlineParamsFinisher = function makeInlineParamsFinisher(parser) {
 exports.makeConstructorFinisher = function makeConstructorFinisher(parser) {
   return e => {
     const doclet = e.doclet;
-    let parentDoclet;
-
-    // for class declarations that are named module exports, the node that's documented is the
-    // ExportNamedDeclaration, not the ClassDeclaration
-    if (e.code.node.parent.parent.parent && e.code.node.parent.parent.parent.type === Syntax.ExportNamedDeclaration) {
-      parentDoclet = parser._getDocletById(e.code.node.parent.parent.parent.nodeId);
-    }
-    // otherwise, we want the ClassDeclaration
-    else {
-      parentDoclet = parser._getDocletById(e.code.node.parent.parent.nodeId);
-    }
+    let parentDoclet = getRedirectDoclet(doclet);
 
     if (!doclet || !parentDoclet || parentDoclet.undocumented) {
       return;
     }
-
+    debugger;
     // We prefer the parent doclet because it has the correct kind, longname, and memberof.
     // The child doclet might or might not have the correct kind, longname, and memberof.
     const combined = jsdoc.doclet.combine(parentDoclet, doclet);
+    delete combined.redirectDoclet;
     parser.addResult(combined);
-    doclet.redirectDoclet = combined;
     parentDoclet.redirectDoclet = combined;
-    doclet.undocumented = true;
     parentDoclet.undocumented = true;
   };
 };
@@ -457,13 +447,23 @@ exports.makeTempateFinisher = function makeTempateFinisher(templateParams) {
     }
   };
 };
-
-exports.makeSuperClassFinisher = function makeSuperClassFinisher(className) {
+exports.makeRedirectDocletFinisher = function makeRedirectDocletFinisher(parser, targetNode) {
+  const targetDoclet = parser._getDocletById(targetNode.nodeId);
   return e => {
-    const { doclet } = e;
-    if (!doclet) {
-      return;
+    const doclet = e.doclet;
+    if (doclet && targetDoclet) {
+      doclet.undocumented = true;
+      doclet.redirectDoclet = targetDoclet;
     }
-    doclet.addTag('extends', className);
+  };
+};
+exports.makeClassFinisher = function makeClassFinisher(node) {
+  return e => {
+    const doclet = getRedirectDoclet(e.doclet);
+    if (node.type == Syntax.ClassDeclaration) {
+      if (node.superClass) {
+        doclet.addTag('extends', jsdoc.src.astnode.nodeToValue(node.superClass));
+      }
+    }
   };
 };
