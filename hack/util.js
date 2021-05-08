@@ -312,7 +312,6 @@ exports.makeConstructorFinisher = function makeConstructorFinisher(parser) {
     if (!doclet || !parentDoclet || parentDoclet.undocumented) {
       return;
     }
-    debugger;
     // We prefer the parent doclet because it has the correct kind, longname, and memberof.
     // The child doclet might or might not have the correct kind, longname, and memberof.
     const combined = jsdoc.doclet.combine(parentDoclet, doclet);

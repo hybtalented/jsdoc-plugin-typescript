@@ -219,8 +219,7 @@ module.exports = function onTypeScriptVisitNode(node, e, parser, currentSourceNa
       e.finishers.unshift(makeNodeTypeFinisher(nodetype));
       break;
     case Syntax.ClassDeclaration:
-      e.finishers = [makeClassFinisher(node)];
-
+      e.finishers.push(makeClassFinisher(node));
       if (node.parent && node.parent.type === Syntax.ExportNamedDeclaration) {
         e.finishers.unshift(makeRedirectDocletFinisher(parser, node.parent));
       }
