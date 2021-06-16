@@ -169,6 +169,12 @@ const nodeToTypeString = node => {
       case 'MethodDefinition':
         expression = nodeToTypeString(node.value);
         break;
+      case 'TSThisType':
+        expression = 'this';
+        break;
+      case 'TSTypeQuery':
+        expression = nodeToValue(node.exprName);
+        break;
       default:
         if (node.typeAnnotation) {
           expression = nodeToTypeString(node.typeAnnotation);

@@ -171,6 +171,7 @@ module.exports = function onTypeScriptVisitNode(node, e, parser, currentSourceNa
       }
       break;
     case Syntax.TSPropertySignature:
+    case Syntax.ClassProperty:
       nodetype = nodeToType(node.typeAnnotation);
       if (node.kind !== 'get' && node.kind !== 'set') {
         extras.finishers = [parser.resolveEnum];
