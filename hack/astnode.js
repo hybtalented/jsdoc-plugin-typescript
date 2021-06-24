@@ -184,7 +184,7 @@ const nodeToTypeString = node => {
             case 'Identifier':
               break;
             case 'TSMethodSignature':
-              logger.debug('The return type of method %s.%s is not defined', node.parent.id.name, node.key.name);
+              logger.debug('The return type of method %s.%s is not defined', node.parent.parent.id.name, node.key.name);
               break;
             default:
               logger.warn('Found type annotation of unrecognized node type %s', node.type);

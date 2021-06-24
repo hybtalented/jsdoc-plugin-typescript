@@ -1,6 +1,6 @@
 {
   "name": "jsdoc-plugin-typescript-support",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "typescript support for jsdoc",
   "main": "index.js",
   "scripts": {
